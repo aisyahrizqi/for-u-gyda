@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Gyda</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=Caveat:wght@500&family=DM+Sans:wght@400;500&family=Italiana&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="https://i.pinimg.com/1200x/ec/32/67/ec3267ff58d27c7630e805208906ebfc.jpg" type="image/png" />
+
+    <style>
+        :root {
+            --champ: #e9d3a8;
+            --rose: #d8a1ae;
+            --blush: #f1d0d6;
+            --sage: #9db4a0;
+            --ivory: #f4eee6;
+            --muted: #b3a8bd;
+            --bg: #150f1d;
+            --hl: #f1d0d6;
+            --sans: 'DM Sans', sans-serif;
+            --disp: 'Italiana', serif;
+            --hand: 'Caveat', cursive
+        }
+
+        body[data-t=a] {
+            --bg: #150f1d;
+            --hl: #f1d0d6
+        }
+
+        body[data-t=b] {
+            --bg: #2a1220;
+            --hl: #e9d3a8
+        }
+
+        body[data-t=c] {
+            --bg: #0e1d22;
+            --hl: #b9d3c4
+        }
+
+        body[data-t=d] {
+            --bg: #26141f;
+            --hl: #f1c3cc
+        }
+
+        body[data-t=e] {
+            --bg: #111a2c;
+            --hl: #c3cdf0
+        }
+
+        body[data-t=f] {
+            --bg: #120e18;
+            --hl: #e9d3a8
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%
+        }
+
+        body {
+            margin: 0;
+            color: var(--ivory);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.15rem, 1.05rem + .5vw, 1.35rem);
+            line-height: 1.85;
+            overflow-x: hidden;
+            background: var(--bg);
+            transition: background-color 1.8s
+        }
+
+        body.locked {
+            overflow: hidden;
+            height: 100svh
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(700px 500px at 12% 8%, rgba(216, 161, 174, .13), transparent 65%), radial-gradient(800px 600px at 92% 55%, rgba(233, 211, 168, .07), transparent 65%), radial-gradient(700px 500px at 20% 95%, rgba(157, 180, 160, .08), transparent 65%)
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 90;
+            opacity: .05;
+            mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")
+        }
+
+        main,
+        header,
+        footer {
+            position: relative;
+            z-index: 2
+        }
+
+        .hand {
+            font-family: var(--hand)
+        }
+
+        .center {
+            text-align: center
+        }
+
+        #bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            width: 0;
+            z-index: 95;
+            background: linear-gradient(90deg, var(--rose), var(--champ))
+        }
+
+        /* gate */
+        #gate {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            padding: 1.5rem;
+            background: radial-gradient(600px 400px at 50% 45%, rgba(216, 161, 174, .16), transparent 70%), #120c19;
+            transition: opacity 1.4s, visibility 1.4s
+        }
+
+        #gate.gone {
+            opacity: 0;
+            visibility: hidden
+        }
+
+        .gate-small {
+            font-family: var(--sans);
+            font-size: .78rem;
+            letter-spacing: .3em;
+            color: var(--muted)
+        }
+
+        .gate-title {
+            font-family: var(--disp);
+            font-size: clamp(3.4rem, 16vw, 6.5rem);
+            color: var(--blush);
+            line-height: 1.1;
+            margin: .5rem 0
+        }
+
+        .gate-line {
+            width: 1px;
+            height: 56px;
+            background: linear-gradient(var(--champ), transparent);
+            margin: 1rem auto
+        }
+
+        .open {
+            font-family: var(--sans);
+            font-size: .85rem;
+            letter-spacing: .22em;
+            color: var(--champ);
+            background: none;
+            border: 1px solid rgba(233, 211, 168, .5);
+            border-radius: 40px;
+            padding: .85rem 2.4rem;
+            cursor: pointer;
+            transition: .4s
+        }
+
+        .open:hover {
+            background: var(--champ);
+            color: #1a1220
+        }
+
+        .open:focus-visible,
+        .bud:focus-visible,
+        #music:focus-visible {
+            outline: 3px solid var(--rose);
+            outline-offset: 4px
+        }
+
+        /* hero */
+        .hero {
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem 1.2rem;
+            position: relative
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: clamp(10px, 2vw, 20px);
+            border: 1px solid rgba(233, 211, 168, .22);
+            pointer-events: none
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: min(90vw, 640px);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(216, 161, 174, .22), rgba(233, 211, 168, .06) 45%, transparent 70%);
+            animation: breathe 8s ease-in-out infinite;
+            z-index: -1
+        }
+
+        @keyframes breathe {
+            50% {
+                transform: scale(1.15);
+                opacity: .7
+            }
+        }
+
+        .dates {
+            font-family: var(--sans);
+            font-size: clamp(.66rem, 2.6vw, .8rem);
+            letter-spacing: .35em;
+            color: var(--champ)
+        }
+
+        .title {
+            font-family: var(--disp);
+            font-weight: 400;
+            font-size: clamp(6rem, 30vw, 16rem);
+            line-height: 1;
+            margin: .3rem 0;
+            display: flex
+        }
+
+        .title span {
+            display: inline-block;
+            background: linear-gradient(170deg, #fff3f4, var(--blush) 35%, var(--rose) 70%, var(--champ));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            opacity: 0;
+            transform: translateY(50px);
+            filter: blur(10px)
+        }
+
+        .ready .title span {
+            animation: letter 1.6s cubic-bezier(.2, .8, .2, 1) forwards;
+            animation-delay: calc(var(--i)*.16s + .4s)
+        }
+
+        @keyframes letter {
+            to {
+                opacity: 1;
+                transform: none;
+                filter: none
+            }
+        }
+
+        .sub {
+            font-size: clamp(1.15rem, 3.4vw, 1.6rem);
+            font-style: italic;
+            color: var(--muted);
+            max-width: 26ch;
+            margin: .4rem auto 0;
+            opacity: 0
+        }
+
+        .ready .sub {
+            animation: fadein 2s 1.6s forwards
+        }
+
+        @keyframes fadein {
+            to {
+                opacity: 1
+            }
+        }
+
+        .scroll {
+            position: absolute;
+            bottom: 2.4rem;
+            width: 1px;
+            height: 50px;
+            background: linear-gradient(var(--champ), transparent);
+            animation: drip 2.4s ease-in-out infinite
+        }
+
+        @keyframes drip {
+            0% {
+                transform: scaleY(0);
+                transform-origin: top
+            }
+
+            50% {
+                transform: scaleY(1);
+                transform-origin: top
+            }
+
+            51% {
+                transform-origin: bottom
+            }
+
+            100% {
+                transform: scaleY(0);
+                transform-origin: bottom
+            }
+        }
+
+        /* letter */
+        .letter {
+            max-width: 41rem;
+            margin: 0 auto;
+            padding: 0 clamp(1.2rem, 5vw, 2rem)
+        }
+
+        .part {
+            padding: clamp(3rem, 9vw, 5.5rem) 0
+        }
+
+        .part p {
+            margin: 0 0 1.5rem
+        }
+
+        .chap {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            justify-content: center;
+            font-family: var(--hand);
+            font-size: 1.5rem;
+            color: var(--champ);
+            margin-bottom: 2.2rem
+        }
+
+        .chap::before,
+        .chap::after {
+            content: "";
+            height: 1px;
+            width: clamp(30px, 10vw, 70px);
+            background: linear-gradient(90deg, transparent, var(--champ));
+            opacity: .6
+        }
+
+        .chap::after {
+            transform: scaleX(-1)
+        }
+
+        .greet {
+            font-family: var(--disp);
+            font-size: clamp(2.4rem, 8vw, 3.4rem);
+            color: var(--hl);
+            line-height: 1.15;
+            text-align: center;
+            transition: color 1.8s
+        }
+
+        .dropcap::first-letter {
+            font-family: var(--disp);
+            font-size: 5.2rem;
+            float: left;
+            line-height: .76;
+            padding: .4rem .8rem 0 0;
+            color: var(--hl);
+            transition: color 1.8s
+        }
+
+        .lead {
+            font-size: 1.12em
+        }
+
+        .soft {
+            color: rgba(244, 238, 230, .82)
+        }
+
+        em,
+        .hl {
+            font-style: italic;
+            color: var(--hl);
+            transition: color 1.8s
+        }
+
+        .hl {
+            background: linear-gradient(transparent 62%, rgba(216, 161, 174, .28) 0);
+            padding: 0 .12em
+        }
+
+        .right {
+            text-align: right;
+            font-style: italic;
+            color: var(--muted)
+        }
+
+        .indent {
+            padding-left: 1.4rem;
+            border-left: 1px solid rgba(233, 211, 168, .4)
+        }
+
+        .pull {
+            font-size: clamp(1.7rem, 6vw, 2.5rem);
+            font-style: italic;
+            line-height: 1.3;
+            text-align: center;
+            color: var(--hl);
+            margin: 3rem auto !important;
+            max-width: 18ch;
+            transition: color 1.8s
+        }
+
+        .pull::before,
+        .pull::after {
+            content: "";
+            display: block;
+            width: 42px;
+            height: 1px;
+            background: var(--champ);
+            opacity: .6;
+            margin: 1rem auto
+        }
+
+        .pull .hand {
+            font-size: 1.1em;
+            color: var(--champ)
+        }
+
+        .note {
+            font-family: var(--hand);
+            font-size: 1.7rem;
+            line-height: 1.4;
+            color: var(--champ)
+        }
+
+        hr.sep {
+            border: 0;
+            text-align: center;
+            margin: 0;
+            height: 1.5rem;
+            overflow: visible
+        }
+
+        hr.sep::after {
+            content: "✦  ✦  ✦";
+            color: var(--champ);
+            opacity: .5;
+            letter-spacing: .5em;
+            font-size: .7rem
+        }
+
+        /* wishes: three lines, centered and staggered */
+        .wishes {
+            list-style: none;
+            margin: 2.4rem 0;
+            padding: 0;
+            display: grid;
+            gap: 1.1rem
+        }
+
+        .wishes li {
+            display: grid;
+            grid-template-columns: 2.6rem 1fr;
+            gap: .9rem;
+            align-items: center;
+            padding: 1rem 1.2rem;
+            border-radius: 18px;
+            background: linear-gradient(120deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .02));
+            border: 1px solid rgba(255, 255, 255, .1);
+            line-height: 1.5
+        }
+
+        .wishes li:nth-child(2) {
+            margin-left: clamp(0px, 5vw, 2.2rem)
+        }
+
+        .wishes li:nth-child(3) {
+            margin-left: clamp(0px, 10vw, 4.4rem)
+        }
+
+        .wishes b {
+            font-weight: 400;
+            font-family: var(--disp);
+            font-size: 1.9rem;
+            color: var(--hl);
+            text-align: center;
+            line-height: 1
+        }
+
+        .wishes i {
+            color: var(--hl)
+        }
+
+        /* casual voice: shift in tone */
+        .voice {
+            font-family: var(--sans);
+            font-size: .98em;
+            line-height: 1.85;
+            padding: 1.6rem 1.5rem;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .1);
+            position: relative;
+            margin: 2.4rem 0 1.5rem
+        }
+
+        .voice::before {
+            content: "“";
+            position: absolute;
+            top: -.9rem;
+            left: 1.1rem;
+            font-family: var(--disp);
+            font-size: 4rem;
+            line-height: 1;
+            color: var(--rose)
+        }
+
+        .voice p {
+            margin: 0 0 1rem
+        }
+
+        .voice p:last-child {
+            margin: 0
+        }
+
+        .voice strong {
+            font-weight: 500;
+            color: var(--blush)
+        }
+
+        /* calendars */
+        .cal-wrap {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: clamp(3rem, 9vw, 5rem) clamp(1rem, 4vw, 1.2rem)
+        }
+
+        .cal-title {
+            text-align: center;
+            font-family: var(--disp);
+            font-size: clamp(1.9rem, 6vw, 2.8rem);
+            color: var(--hl);
+            transition: color 1.8s
+        }
+
+        .cal-sub {
+            text-align: center;
+            color: var(--muted);
+            font-style: italic;
+            margin: 0 0 2.4rem
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 1.3rem
+        }
+
+        .cal {
+            --ac: var(--champ);
+            background: linear-gradient(160deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .02));
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 20px;
+            padding: 1.4rem;
+            backdrop-filter: blur(8px);
+            font-family: var(--sans);
+            position: relative;
+            overflow: hidden;
+            min-width: 0
+        }
+
+        .cal::before {
+            content: "";
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--ac), transparent 70%);
+            opacity: .18
+        }
+
+        .cal.big {
+            grid-row: span 2;
+            padding: 2rem 1.6rem
+        }
+
+        .cal h3 {
+            font-family: var(--disp);
+            font-weight: 400;
+            font-size: 1.6rem;
+            color: var(--ac);
+            margin: 0
+        }
+
+        .cal.big h3 {
+            font-size: clamp(2.2rem, 7vw, 3.2rem)
+        }
+
+        .cal .yr {
+            font-size: .75rem;
+            letter-spacing: .3em;
+            color: var(--muted)
+        }
+
+        .cal .lbl {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.4;
+            margin: .7rem 0 1.1rem
+        }
+
+        .grid7 {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: .85rem;
+            row-gap: 2px
+        }
+
+        .cal.big .grid7 {
+            font-size: 1rem;
+            row-gap: 6px
+        }
+
+        .grid7 b {
+            font-weight: 500;
+            color: var(--muted);
+            font-size: .62rem;
+            letter-spacing: .08em;
+            padding-bottom: 6px
+        }
+
+        .grid7 i {
+            font-style: normal;
+            color: rgba(244, 238, 230, .78);
+            aspect-ratio: 1;
+            display: grid;
+            place-items: center;
+            position: relative
+        }
+
+        .grid7 .hit {
+            color: #1a1220;
+            font-weight: 500;
+            z-index: 1
+        }
+
+        .grid7 .hit::before {
+            content: "";
+            position: absolute;
+            inset: 6%;
+            border-radius: 50%;
+            background: var(--ac);
+            z-index: -1;
+            box-shadow: 0 0 22px var(--ac);
+            transform: scale(0);
+            transition: transform 1.2s cubic-bezier(.2, 1.4, .4, 1) .6s
+        }
+
+        .on .grid7 .hit::before,
+        .cal-wrap.on .grid7 .hit::before {
+            transform: scale(1)
+        }
+
+        .cap {
+            text-align: center;
+            font-family: var(--hand);
+            font-size: 1.4rem;
+            color: var(--muted);
+            margin-top: 1rem
+        }
+
+        /* chat */
+        .chat {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 26px;
+            padding: 1.2rem;
+            backdrop-filter: blur(10px);
+            font-family: var(--sans);
+            font-size: .96rem;
+            line-height: 1.5;
+            margin-top: 2rem
+        }
+
+        .chat-head {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            padding: .2rem .4rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            margin-bottom: 1rem
+        }
+
+        .dot {
+            flex: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--sage), var(--rose));
+            display: grid;
+            place-items: center;
+            font-family: var(--disp);
+            font-size: 1.2rem;
+            color: #1a1220
+        }
+
+        .chat-head small {
+            color: var(--muted);
+            display: block;
+            font-size: .78rem
+        }
+
+        .day {
+            text-align: center;
+            color: var(--muted);
+            font-size: .78rem;
+            margin: .4rem 0 .9rem
+        }
+
+        .msg {
+            max-width: 82%;
+            padding: .55rem .9rem;
+            border-radius: 18px;
+            margin-bottom: .5rem;
+            width: fit-content;
+            overflow-wrap: anywhere
+        }
+
+        .msg time {
+            display: block;
+            font-size: .68rem;
+            opacity: .55;
+            text-align: right;
+            margin-top: 2px
+        }
+
+        .them {
+            background: rgba(255, 255, 255, .1);
+            border-bottom-left-radius: 5px
+        }
+
+        .me {
+            background: linear-gradient(135deg, #9e4a6c, #6f5aa8);
+            margin-left: auto;
+            border-bottom-right-radius: 5px
+        }
+
+        /* media */
+        .frame {
+            background: var(--ivory);
+            padding: 12px 12px 52px;
+            border-radius: 3px;
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .7);
+            transform: rotate(-1.8deg);
+            max-width: 380px;
+            margin: 0 auto;
+            position: relative;
+            transition: transform .6s
+        }
+
+        .frame:hover {
+            transform: rotate(0) scale(1.02)
+        }
+
+        .frame img {
+            width: 100%;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            display: block;
+            background: linear-gradient(135deg, #3b2a52, #6b4a73)
+        }
+
+        .frame span {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: var(--hand);
+            font-size: 1.6rem;
+            color: #4a3556
+        }
+
+        .vid {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, .12);
+            box-shadow: 0 30px 60px -25px rgba(0, 0, 0, .7);
+            max-width: 520px;
+            margin: 0 auto;
+            background: #000
+        }
+
+        .vid video {
+            width: 100%;
+            display: block
+        }
+
+        /* surprise */
+        .surprise {
+            text-align: center;
+            padding: 5rem 1.5rem 8rem;
+            max-width: 41rem;
+            margin: 0 auto
+        }
+
+        .bud {
+            border: 1px solid rgba(233, 211, 168, .6);
+            background: rgba(233, 211, 168, .06);
+            color: var(--champ);
+            font-family: var(--disp);
+            font-size: 1.4rem;
+            letter-spacing: .1em;
+            border-radius: 50%;
+            width: 132px;
+            height: 132px;
+            margin: 1.6rem auto;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: .5s;
+            animation: ripple 3s infinite
+        }
+
+        .bud:hover {
+            background: var(--champ);
+            color: #1a1220
+        }
+
+        @keyframes ripple {
+            0% {
+                box-shadow: 0 0 0 0 rgba(233, 211, 168, .35)
+            }
+
+            70%,
+            100% {
+                box-shadow: 0 0 0 30px rgba(233, 211, 168, 0)
+            }
+        }
+
+        .secret {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 2s 1s, max-height 1s 1s;
+            font-size: clamp(1.3rem, 4.5vw, 1.6rem);
+            font-style: italic;
+            color: var(--blush)
+        }
+
+        .secret.on {
+            opacity: 1;
+            max-height: 400px;
+            margin-top: 1rem
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-family: var(--sans);
+            font-size: .72rem;
+            letter-spacing: .25em;
+            line-height: 1.8;
+            padding: 0 1rem calc(4rem + env(safe-area-inset-bottom))
+        }
+
+        /* music */
+        #music {
+            position: fixed;
+            right: max(14px, env(safe-area-inset-right));
+            bottom: max(14px, env(safe-area-inset-bottom));
+            z-index: 60;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            border: 1px solid rgba(255, 255, 255, .15);
+            background: rgba(18, 12, 25, .78);
+            backdrop-filter: blur(10px);
+            color: var(--ivory);
+            border-radius: 40px;
+            padding: 6px 16px 6px 6px;
+            cursor: pointer;
+            font-family: var(--sans);
+            font-size: .76rem;
+            line-height: 1.25;
+            text-align: left;
+            max-width: calc(100vw - 28px)
+        }
+
+        .disc {
+            flex: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: repeating-radial-gradient(circle, #2b2133 0 2px, #1a1320 2px 4px);
+            position: relative;
+            animation: spin 5s linear infinite;
+            animation-play-state: paused
+        }
+
+        .disc::after {
+            content: "";
+            position: absolute;
+            inset: 14px;
+            border-radius: 50%;
+            background: var(--champ)
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .playing .disc {
+            animation-play-state: running
+        }
+
+        #music small {
+            display: block;
+            color: var(--muted)
+        }
+
+        /* bloom */
+        #stage {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            pointer-events: none;
+            background: rgba(10, 7, 16, 0);
+            transition: background 1.4s
+        }
+
+        #stage.on {
+            background: rgba(10, 7, 16, .6)
+        }
+
+        #plant,
+        #rain {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%
+        }
+
+        #plant:not(.go) {
+            visibility: hidden
+        }
+
+        .stem {
+            fill: none;
+            stroke: url(#gs);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 1;
+            stroke-dashoffset: 1
+        }
+
+        .go .stem {
+            animation: draw 2.6s cubic-bezier(.45, 0, .2, 1) forwards
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0
+            }
+        }
+
+        .leaf path {
+            fill: url(#gl);
+            transform: scale(0)
+        }
+
+        .go .leaf path {
+            animation: grow 1.2s cubic-bezier(.2, .9, .3, 1.2) var(--d) forwards
+        }
+
+        @keyframes grow {
+            to {
+                transform: scale(1)
+            }
+        }
+
+        .fl {
+            transform: scale(.05)
+        }
+
+        .go .fl {
+            animation: grow 3s cubic-bezier(.3, .7, .2, 1) 2.2s forwards
+        }
+
+        .p {
+            transform: scale(.2, .12);
+            opacity: 0
+        }
+
+        .go .p {
+            animation: unfurl 1.5s cubic-bezier(.2, .8, .2, 1) forwards
+        }
+
+        @keyframes unfurl {
+            to {
+                transform: scale(1);
+                opacity: 1
+            }
+        }
+
+        #plant.burst .fl {
+            animation: vanish .7s ease-in forwards
+        }
+
+        @keyframes vanish {
+            to {
+                transform: scale(1.7);
+                opacity: 0
+            }
+        }
+
+        #plant.burst .stem,
+        #plant.burst .leaf {
+            animation: fadeout 1.2s .2s forwards
+        }
+
+        @keyframes fadeout {
+            to {
+                opacity: 0
+            }
+        }
+
+        /* reveal (per element) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity 1.1s ease, transform 1.1s ease
+        }
+
+        .reveal.on {
+            opacity: 1;
+            transform: none
+        }
+
+        @media (max-width:760px) {
+            .cal-grid {
+                grid-template-columns: 1fr
+            }
+
+            .cal.big {
+                grid-row: auto
+            }
+        }
+
+        @media (max-width:480px) {
+            .dropcap::first-letter {
+                font-size: 4.2rem
+            }
+
+            .wishes li {
+                grid-template-columns: 2rem 1fr;
+                padding: .9rem 1rem
+            }
+
+            .voice {
+                padding: 1.4rem 1.1rem
+            }
+
+            .chat {
+                padding: .9rem;
+                font-size: .92rem
+            }
+
+            .msg {
+                max-width: 90%
+            }
+
+            #music span:nth-child(2) {
+                font-size: 0;
+                line-height: 0
+            }
+
+            #music small {
+                font-size: .7rem;
+                line-height: 1.2;
+                max-width: 9ch;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis
+            }
+
+            #music {
+                padding: 5px 12px 5px 5px
+            }
+        }
+
+        @media (prefers-reduced-motion:reduce) {
+
+            .hero::after,
+            .scroll,
+            .bud {
+                animation: none
+            }
+
+            .reveal {
+                transition-duration: .01s;
+                transform: none
+            }
+
+            html {
+                scroll-behavior: auto
+            }
+        }
+    </style>
+</head>
+
+<body class="locked" data-t="a">
+    <div id="bar"></div>
+
+    <div id="gate">
+        <div>
+            <div class="gate-small">sebuah surat untuk</div>
+            <div class="gate-title">Gyda</div>
+            <div class="gate-line"></div>
+            <button class="open" id="open">BUKA SURAT</button>
+            <p class="gate-small" style="letter-spacing:.2em;margin-top:1.5rem">nyalakan suaranya ya</p>
+        </div>
+    </div>
+
+    <div id="stage" aria-hidden="true">
+        <svg id="plant" viewBox="0 0 400 700" preserveAspectRatio="xMidYMax meet">
+            <defs>
+                <linearGradient id="gs" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0" stop-color="#5f7f6a" />
+                    <stop offset="1" stop-color="#9db4a0" />
+                </linearGradient>
+                <linearGradient id="gl" x1="0" y1="1" x2="1" y2="0">
+                    <stop offset="0" stop-color="#6c8f78" />
+                    <stop offset="1" stop-color="#b9d3c4" />
+                </linearGradient>
+                <linearGradient id="g1" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0" stop-color="#a8456b" />
+                    <stop offset="1" stop-color="#ecb7c4" />
+                </linearGradient>
+                <linearGradient id="g2" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0" stop-color="#d8a1ae" />
+                    <stop offset="1" stop-color="#fbe6ea" />
+                </linearGradient>
+                <linearGradient id="g3" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0" stop-color="#e9d3a8" />
+                    <stop offset="1" stop-color="#fff6e0" />
+                </linearGradient>
+            </defs>
+            <path class="stem" pathLength="1" d="M200 700 C196 590 214 440 200 300" />
+            <g class="leaf" transform="translate(203 590)">
+                <path style="--d:1.1s" d="M0 0 C40 -30 85 -25 115 -62 C78 -80 20 -58 0 0Z" />
+            </g>
+            <g class="leaf" transform="translate(199 500) scale(-1 1)">
+                <path style="--d:1.5s" d="M0 0 C40 -30 85 -25 115 -62 C78 -80 20 -58 0 0Z" />
+            </g>
+            <g class="leaf" transform="translate(205 420)">
+                <path style="--d:1.9s" d="M0 0 C30 -22 62 -18 82 -46 C56 -58 14 -42 0 0Z" />
+            </g>
+            <g transform="translate(200 300)">
+                <g class="fl" id="fl"></g>
+            </g>
+        </svg>
+        <canvas id="rain"></canvas>
+    </div>
+
+    <!-- Letakkan lagu di: assets/honeybee.mpeg (atau honeybee.mp3) -->
+    <audio id="song" loop preload="auto">
+        <source src="assets/honeybee.mpeg" type="audio/mpeg">
+        <source src="assets/honeybee.mp3" type="audio/mpeg">
+    </audio>
+    <button id="music" aria-label="Putar atau jeda lagu"><span class="disc"></span><span>Honeybee · Olivia Rodrigo<small
+                id="mstate">paused</small></span></button>
+
+    <header class="hero" id="hero" data-t="a">
+        <div class="dates">10 . 11 . 2004 — 10 . 11 . 2026</div>
+        <h1 class="title" aria-label="Gyda"><span style="--i:0">G</span><span style="--i:1">y</span><span
+                style="--i:2">d</span><span style="--i:3">a</span></h1>
+        <p class="sub">sebuah surat kecil, untuk perempuan yang hari ini genap dua puluh dua tahun.</p>
+        <div class="scroll"></div>
+    </header>
+
+    <main>
+        <div class="letter">
+
+            <!-- I. Pembuka -->
+            <section class="part" data-t="a">
+                <div class="chap">untukmu, hari ini</div>
+                <p class="greet">Hai, Gyda.</p>
+                <p class="dropcap lead">Entah mengapa, tanggal ini membuatku semakin menyadari betapa banyak hal yang
+                    ingin kusampaikan kepadamu, sementara jarak di antara kita tidak memberiku banyak kesempatan untuk
+                    melakukannya.</p>
+                <p>Aku ingin mengucapkan selamat ulang tahun <span class="hl">tanpa harus memikirkan apakah kehadiranku
+                        masih kamu inginkan.</span> Ingin menanyakan kabarmu tanpa merasa sedang mengusik kehidupan yang
+                    mungkin telah kamu susun tanpaku.</p>
+                <p class="soft">Aku ingin menjadi salah satu orang yang kamu tunggu ucapannya hari ini. Ingin melihat
+                    namaku muncul di antara notifikasi-notifikasi yang membuatmu tersenyum. Keinginan yang tampak
+                    sederhana, barangkali, tetapi belakangan terasa seperti sesuatu yang terlalu jauh untuk kuminta.</p>
+                <p class="right">Maka, jika hari ini aku tidak bisa menyampaikan semuanya secara langsung, biarlah
+                    tulisan ini menjadi tempat bagi kata-kata yang belum menemukan jalan pulang kepadamu.</p>
+                <hr class="sep">
+            </section>
+
+            <!-- II. Doa -->
+            <section class="part" data-t="a">
+                <div class="chap">doa-doa kecil</div>
+                <p class="lead">Selamat ulang tahun, Da. <em>Tumbuhlah dengan lembut,</em> tanpa harus terburu-buru
+                    mengejar sesuatu. Semoga dunia selalu memberimu…</p>
+                <ul class="wishes">
+                    <li><b>☀</b><span>cukup <i>cahaya</i> untuk merekah,</span></li>
+                    <li><b>☂</b><span>cukup <i>hujan</i> untuk bertumbuh,</span></li>
+                    <li><b>☾</b><span>dan cukup <i>ketenangan</i> untuk menerima hari-hari ketika kelopakmu tak sekuat
+                            biasanya.</span></li>
+                </ul>
+                <p>Semoga segala hal yang kamu impikan perlahan menemukan jalannya, semoga hatimu selalu punya tempat
+                    untuk beristirahat, dan semoga kamu tidak pernah kehilangan bagian dirimu yang membuatmu menjadi
+                    seseorang yang begitu ingin kukenali lebih jauh.</p>
+                <p class="indent soft">Aku akan mendukungmu ketika kamu berani mengambil langkah besar, menyemangatimu
+                    ketika kamu mulai meragukan kemampuanmu, dan mengingatkanmu untuk beristirahat ketika kamu terlalu
+                    sibuk mengejar segala hal yang kamu inginkan.</p>
+                <p>Aku harap kamu tidak sedang terlalu keras terhadap dirimu sendiri. Aku harap kamu masih menemukan
+                    hal-hal kecil yang membuatmu bahagia. Dan aku harap kamu tidak pernah merasa harus menghadapi
+                    seluruh kesulitan hidup sendirian.</p>
+                <div class="voice">
+                    <p><strong>Happy birthday ya.</strong> Semoga di umur yang ke-22 ini kamu makin banyak bersyukur
+                        sama semua nikmat dan rezeki yang udah datang, dan makin lapang buat nerima yang belum.</p>
+                    <p>Semoga sehat selalu, dikelilingi orang-orang yang tulus, semoga saham mu selalu hijau ehehe, dan
+                        rezekinya lancar dari arah yang nggak disangka-sangka.</p>
+                    <p>Semoga skripsi kamu lancar, dosennya baik, revisinya sedikit, dan sidangnya bikin kamu bangga
+                        sama diri sendiri. Dan semoga setiap langkah kamu dimudahkan, bahkan di hari-hari yang kamu rasa
+                        berat. <strong>You've got this, always.</strong></p>
+                </div>
+                <p class="pull">segala doa baik yang aku punya, <span class="hand">semuanya buat kamu.</span></p>
+            </section>
+
+        </div>
+
+        <section class="cal-wrap" data-t="b">
+            <div class="cal-title">Tanggal-tanggal yang kuingat</div>
+            <p class="cal-sub">tiga hal yang bikin cerita ini ada.</p>
+            <div class="cal-grid" id="cals"></div>
+        </section>
+
+        <div class="letter">
+            <!-- III. Awal mula -->
+            <section class="part" data-t="c">
+                <div class="chap">awal mula</div>
+                <p class="greet">Hai, Jamal Susanto.</p>
+                <p class="lead">Kita pertama kali ketemu tanggal <em>11 Juli 2024</em>, di aplikasi pesawat biru itu.
+                    Ahaha. First impression-nya? Jujur, <span class="note">worst.</span></p>
+                <p>Berantem mulu, terus tiba-tiba kamu yang minta dibangunin <span class="soft">(jujur, ini gaje
+                        bgt)</span>. Dari situ malah lanjut ngobrol, terus pindah ke WhatsApp.</p>
+                <p class="soft">Dari perkenalan singkat itu kita jadi dekat, ngobrol hal random dan cerita tentang
+                    kehidupan masing-masing, sebelum akhirnya kamu mulai sering gombal. Pfft, buaya. Dan entah gimana,
+                    pada akhirnya kita pacaran <span class="hand" style="font-size:1.4rem;color:var(--champ)">(?)</span>
+                </p>
+                <div class="chat" role="img" aria-label="Potongan chat pertama di Telegram">
+                    <div class="chat-head">
+                        <div class="dot">S</div>
+                        <div>jamal susanto alias santo<small>Telegram · 11 Juli 2024</small></div>
+                    </div>
+                    <div class="day">11 Juli 2024</div>
+                    <div class="msg me">p, santo<time>14.35</time></div>
+                    <div class="msg me">ke skip<time>14.35</time></div>
+                    <div class="msg them">Halah halah<time>14.52</time></div>
+                    <div class="msg them">Emang modus aja pengen PC kan lu<time>14.52</time></div>
+                    <div class="msg them">-emot kucing pake kacamata hitam-<time>14.52</time></div>
+                    <div class="msg me">heh babi<time>14.53</time></div>
+                    <div class="msg them">Awokawok<time>14.54</time></div>
+                    <div class="msg them">Santayy<time>14.54</time></div>
+                    <div class="msg them">Marah marah mulu lu<time>14.54</time></div>
+                </div>
+                <p class="cap">the chat where it all started.</p>
+            </section>
+
+            <hr class="sep">
+
+            <section class="part center" data-t="d">
+                <figure class="frame" style="margin-top:0"><img src="assets/ourfirstphoto.jpeg" alt="Foto kita"
+                        loading="lazy"><span>us, once upon a time</span></figure>
+            </section>
+
+            <!-- IV. Kita -->
+            <section class="part" data-t="d">
+                <div class="chap">kita</div>
+                <p class="lead">Kita resmi pacaran tanggal <em>01 September 2024</em>. Kamu dulu nyatet tanggalnya kan?
+                    Sekarang tanggal itu aku jadiin <span class="hl">password penting dalam hidup aku.</span></p>
+                <p>Kenal kamu bikin hidup aku jauh lebih berwarna. Aku ngerasain apa itu <em>butterfly era</em>, dan aku
+                    bahagia banget waktu itu.</p>
+                <p class="soft">Kamu yang selalu nawarin ini-itu, bahkan rela ngorbanin tabungan kamu sampai satu juta
+                    buat aku. Tapi nggak jadi aku ambil semuanya wle, aku cuma pinjam 100 karena aku beneran nggak
+                    seberani itu. Apalagi kamu mahasiswa yang katanya kaya raya. Ahahaha.</p>
+                <p class="pull">kamu cinta pertamaku <span class="hand">sama perempuan.</span></p>
+                <p>Kenal kamu bener-bener seru. Susah, seneng, semuanya aku ceritain ke kamu, dan kamu kenal aku dari
+                    sisi mana pun.</p>
+                <p class="indent soft">Makanya sampai sekarang aku sulit nemuin orang kayak kamu, dan sulit buka hati
+                    buat orang lain, karena aku masih terpaku sama kamu sampai detik ini. Aku terima semua rasa
+                    sakitnya.</p>
+                <hr class="sep">
+            </section>
+
+            <section class="part" data-t="d">
+                <div class="chap">terima kasih &amp; maaf</div>
+                <p class="lead">Makasih untuk dua tahunnya ya, Daa.</p>
+                <p>Dua tahun hidup aku yang semuanya diisi sama kamu, apa-apa kamu. Aku ngerasa jadi jauh lebih dewasa
+                    setelah kenal kamu.</p>
+                <p class="right">Dan maafin semua sikap aku yang nyakitin kamu ya. Aku sadar, aku ikut andil dalam
+                    menurunnya kondisi mental dan kesehatanmu. <em>I'm truly sorry for that.</em></p>
+            </section>
+
+            <section class="part" style="padding-top:0" data-t="e">
+                <div class="vid"><video controls playsinline preload="metadata">
+                        <source src="assets/ourvideo.mp4" type="video/mp4"></video></div>
+                <p class="cap">press play, kalau kamu lagi kangen.</p>
+                <hr class="sep" style="margin-top:3rem">
+            </section>
+
+            <!-- V. Pamit -->
+            <section class="part" data-t="e">
+                <div class="chap">pamit</div>
+                <p class="lead">Aku pamit istirahat dari hidup kamu ya.</p>
+                <p>Kamu pasti udah nemuin orang lain kan? Yang imut, riang, yang bisa hibur kamu pas lagi sedih. Aku
+                    rasa kamu udah sangat bisa hidup tanpa aku.</p>
+                <p class="soft">Selama ini aku sadar kalau cuma aku yang bergantung sama kamu, dan aku tau itu jadi
+                    beban buat kamu.</p>
+                <p>Ga semuanya harus tentang cinta, Da. <em>Sekarang waktunya kamu berkarir, bangun versi terbaik dari
+                        dirimu.</em></p>
+                <p class="indent soft">Kamu sayang banget sama mama kamu, jadi aku harap kamu tidak membuat beliau
+                    kecewa. Feeling seorang ibu itu kadang selalu tepat.</p>
+                <p class="pull">semoga hidup kamu <span class="hand">selalu ditemani damai.</span></p>
+                <p>Jujur, sampai detik ini aku masih sayang dan cinta sama kamu. Tapi tenang, aku terus berusaha buat
+                    berhenti. Aku bakal menjauh pelan-pelan. Mengubur semuanya, jadi kamu akan tenang.</p>
+                <p class="soft">Aku pergi ya, Da. Bukan buat ninggalin kamu selamanya, aku tetap di sini. Cuma kali ini,
+                    mari saling melihat sebagai teman, atau saudara. Nanti kita main lagi yaa. Nomor aku tetap sama
+                    kalau kamu butuh sesuatu.</p>
+                <p class="right">Maaf, hanya kado kecil ini yang bisa aku kasih ke kamu.</p>
+                <p class="note center" style="margin-top:2.4rem">sedih sih, ahaha. but it's okay.<br>maybe in another
+                    life ya, Da.</p>
+            </section>
+        </div>
+
+        <section class="surprise" data-t="f">
+            <p class="hand reveal" style="color:var(--muted);font-size:1.9rem;margin:0">satu hal lagi, buat kamu…</p>
+            <button class="bud" id="bud" aria-label="Pencet untuk kejutan">mekar</button>
+            <p class="secret" id="secret">Semoga kamu mekar di tempat yang baik, tumbuh di waktu yang kamu mau, dan
+                selalu punya alasan buat tersenyum tanpa harus dipaksa, Gyda.<br><br>Happy 22nd. Take care, always.</p>
+        </section>
+    </main>
+
+    <footer>Untuk Gyda, dengan seluruh rasa yang pernah ada<br>10.11.2026</footer>
+
+    <script>
+        // calendars
+        const BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September',
+                'Oktober', 'November', 'Desember'
+            ],
+            HARI = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+            cals = [{
+                y: 2026,
+                m: 10,
+                d: 10,
+                l: 'Ulang tahun Gyda',
+                ac: '#e9d3a8',
+                big: 1
+            }, {
+                y: 2024,
+                m: 6,
+                d: 11,
+                l: 'Pertama kali bertemu',
+                ac: '#9db4a0'
+            }, {
+                y: 2024,
+                m: 8,
+                d: 1,
+                l: 'Resmi jadian',
+                ac: '#e79bb0'
+            }];
+        document.getElementById('cals').innerHTML = cals.map(c => {
+            const first = new Date(c.y, c.m, 1).getDay(),
+                n = new Date(c.y, c.m + 1, 0).getDate();
+            let g = HARI.map(x => `<b>${x}</b>`).join('') + '<i></i>'.repeat(first);
+            for (let k = 1; k <= n; k++) g += `<i${k===c.d?' class="hit"':''}>${k}</i>`;
+            const full = new Date(c.y, c.m, c.d).toLocaleDateString('id-ID', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            return `<article class="cal${c.big?' big':''}" style="--ac:${c.ac}"><h3>${BULAN[c.m]}</h3><div class="yr">${c.y}</div><div class="lbl">${c.l}<br>${full}</div><div class="grid7">${g}</div></article>`;
+        }).join('');
+
+        // reveal each paragraph/element separately for a gentler reading rhythm
+        const targets = document.querySelectorAll(
+            '.letter .part > *:not(.chap):not(hr),.letter .voice p,.cal-wrap > *,.cal');
+        targets.forEach(el => el.classList.add('reveal'));
+        document.querySelectorAll('.part > .chap').forEach(el => el.classList.add('reveal'));
+        const io = new IntersectionObserver(es => es.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('on');
+                io.unobserve(e.target)
+            }
+        }), {
+            threshold: .12,
+            rootMargin: '0px 0px -6% 0px'
+        });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+        document.querySelectorAll('.cal').forEach(el => new IntersectionObserver((es, o) => es.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('on');
+                o.disconnect()
+            }
+        }), {
+            threshold: .25
+        }).observe(el));
+
+        // background theme per section
+        const tio = new IntersectionObserver(es => es.forEach(e => {
+            if (e.isIntersecting) document.body.dataset.t = e.target.dataset.t
+        }), {
+            rootMargin: '-50% 0px -50% 0px'
+        });
+        document.querySelectorAll('[data-t]').forEach(el => {
+            if (el !== document.body) tio.observe(el)
+        });
+
+        // progress bar
+        const bar = document.getElementById('bar');
+        addEventListener('scroll', () => {
+            const h = document.documentElement;
+            bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight || 1) * 100) + '%'
+        }, {
+            passive: true
+        });
+
+        // music
+        const song = document.getElementById('song'),
+            mBtn = document.getElementById('music'),
+            mState = document.getElementById('mstate');
+
+        function setState() {
+            const on = !song.paused;
+            mBtn.classList.toggle('playing', on);
+            mState.textContent = on ? 'now playing' : 'paused'
+        }
+
+        function noFile() {
+            mState.textContent = 'lagu belum ada'
+        }
+        song.querySelectorAll('source').forEach(s => s.addEventListener('error', () => {
+            if (song.networkState === 3) noFile()
+        }));
+        mBtn.addEventListener('click', () => {
+            if (song.error) {
+                noFile();
+                return
+            }
+            song.paused ? song.play().catch(noFile) : song.pause()
+        });
+        song.addEventListener('play', setState);
+        song.addEventListener('pause', setState);
+
+        // gate
+        document.getElementById('open').addEventListener('click', () => {
+            document.getElementById('gate').classList.add('gone');
+            document.body.classList.remove('locked');
+            document.getElementById('hero').classList.add('ready');
+            song.volume = .7;
+            song.play().catch(() => {});
+        });
+
+        // flower
+        const fl = document.getElementById('fl'),
+            NS = 'http://www.w3.org/2000/svg';
+        [{
+            n: 9,
+            len: 112,
+            w: 30,
+            off: 0,
+            g: 'g1'
+        }, {
+            n: 9,
+            len: 86,
+            w: 25,
+            off: 20,
+            g: 'g2'
+        }, {
+            n: 7,
+            len: 58,
+            w: 19,
+            off: 8,
+            g: 'g3'
+        }].forEach((r, ri) => {
+            for (let i = 0; i < r.n; i++) {
+                const g = document.createElementNS(NS, 'g');
+                g.setAttribute('transform', `rotate(${r.off+i*360/r.n})`);
+                const p = document.createElementNS(NS, 'path');
+                p.setAttribute('class', 'p');
+                p.setAttribute('d',
+                    `M0 0 C${r.w*1.1} ${-r.len*.25} ${r.w*.9} ${-r.len*.85} 0 ${-r.len} C${-r.w*.9} ${-r.len*.85} ${-r.w*1.1} ${-r.len*.25} 0 0Z`
+                    );
+                p.setAttribute('fill', `url(#${r.g})`);
+                p.style.animationDelay = (2.9 + ri * .35 + i * .05) + 's';
+                g.appendChild(p);
+                fl.appendChild(g);
+            }
+        });
+        const ce = document.createElementNS(NS, 'circle');
+        ce.setAttribute('r', '13');
+        ce.setAttribute('fill', '#e9b94f');
+        fl.appendChild(ce);
+
+        // bloom -> petal rain
+        const stage = document.getElementById('stage'),
+            plant = document.getElementById('plant'),
+            cv = document.getElementById('rain'),
+            ctx = cv.getContext('2d'),
+            COLORS = ['#d8a1ae', '#f1d0d6', '#e9d3a8', '#b5557a', '#f6e7ea', '#b9a3e3', '#9db4a0', '#ecb7c4'];
+        let parts = [],
+            raf = 0,
+            spawnUntil = 0,
+            busy = false,
+            W = 0,
+            H = 0;
+
+        function fit() {
+            const d = devicePixelRatio || 1;
+            W = innerWidth;
+            H = innerHeight;
+            cv.width = W * d;
+            cv.height = H * d;
+            ctx.setTransform(d, 0, 0, d, 0, 0)
+        }
+        addEventListener('resize', fit);
+        fit();
+
+        function petal(s) {
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(s * .6, -s * .25, s * .5, -s * .85, 0, -s);
+            ctx.bezierCurveTo(-s * .5, -s * .85, -s * .6, -s * .25, 0, 0);
+            ctx.fill()
+        }
+
+        function mk(x, y, ex) {
+            const a = Math.random() * Math.PI * 2,
+                sp = ex ? 3 + Math.random() * 12 : 0;
+            return {
+                x,
+                y,
+                vx: ex ? Math.cos(a) * sp : (Math.random() - .5) * 1.2,
+                vy: ex ? Math.sin(a) * sp - 3 : 1 + Math.random() * 2,
+                drag: ex ? .965 : .997,
+                g: ex ? .1 : .02,
+                term: 1.8 + Math.random() * 1.8,
+                rot: Math.random() * 6.3,
+                vr: (Math.random() - .5) * .1,
+                s: ex ? 10 + Math.random() * 16 : 9 + Math.random() * 13,
+                flower: Math.random() < .22,
+                col: COLORS[Math.random() * COLORS.length | 0],
+                t: Math.random() * 6,
+                sw: .3 + Math.random() * .8,
+                fp: Math.random() * 6,
+                fs: .03 + Math.random() * .05
+            };
+        }
+
+        function loop(now) {
+            ctx.clearRect(0, 0, W, H);
+            if (now < spawnUntil)
+                for (let i = 0; i < 3; i++) parts.push(mk(Math.random() * W, -30, false));
+            parts = parts.filter(p => p.y < H + 60);
+            for (const p of parts) {
+                p.vx *= p.drag;
+                p.vy = Math.min(p.vy * p.drag + p.g, p.term);
+                p.t += .03;
+                p.fp += p.fs;
+                p.x += p.vx + Math.sin(p.t) * p.sw;
+                p.y += p.vy;
+                p.rot += p.vr;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot);
+                ctx.scale(1, .45 + .55 * Math.abs(Math.cos(p.fp)));
+                ctx.fillStyle = p.col;
+                ctx.globalAlpha = .95;
+                if (p.flower) {
+                    for (let i = 0; i < 5; i++) {
+                        ctx.rotate(1.2566);
+                        petal(p.s * .9)
+                    }
+                    ctx.fillStyle = '#e9b94f';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.s * .17, 0, 6.3);
+                    ctx.fill()
+                } else {
+                    ctx.translate(0, p.s / 2);
+                    petal(p.s)
+                }
+                ctx.restore();
+            }
+            if (parts.length || now < spawnUntil) raf = requestAnimationFrame(loop);
+            else {
+                raf = 0;
+                ctx.clearRect(0, 0, W, H);
+                stage.classList.remove('on');
+                plant.classList.remove('go', 'burst');
+                busy = false
+            }
+        }
+
+        function burst() {
+            const r = fl.getBoundingClientRect(),
+                cx = r.left + r.width / 2,
+                cy = r.top + r.height / 2;
+            plant.classList.add('burst');
+            for (let i = 0; i < 190; i++) parts.push(mk(cx, cy, true));
+            spawnUntil = performance.now() + 5500;
+            document.getElementById('secret').classList.add('on');
+            if (!raf) raf = requestAnimationFrame(loop);
+        }
+        document.getElementById('bud').addEventListener('click', () => {
+            if (busy) return;
+            busy = true;
+            stage.classList.add('on');
+            plant.classList.remove('go', 'burst');
+            void plant.getBoundingClientRect();
+            plant.classList.add('go');
+            setTimeout(burst, 5800);
+        });
+    </script>
+</body>
+
+</html>
